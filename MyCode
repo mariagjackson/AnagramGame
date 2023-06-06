@@ -1,0 +1,1381 @@
+
+// File Name:	SummativeAnagrams; JavaAnagrams
+// Programmer:	Maria Jackson
+// Date:        19/05/2023
+// Description:	This program demonstrates a my ability to create a comprehensive 
+//              digital version of the classic word game Anagrams
+
+
+// Package, Class, Import, and Memory Requirements
+
+package jAnagrams;
+
+
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.ArrayList;
+import javax.swing.JOptionPane;
+import javax.swing.Timer;
+
+
+public class JavaAnagrams extends javax.swing.JFrame {
+
+    // Initalize word list in class before adding words
+    private ArrayList<String> wordList;
+    
+    
+    // Creates new form JavaAnagrams
+    public JavaAnagrams() {
+        initComponents();
+        
+        
+        // Set all panels BUT the opening screen panel to be invisible and
+        // disabled
+        ActualGame.setVisible(false);
+        ActualGame.setEnabled(false);
+        ClosingScreen.setVisible(false);
+        ClosingScreen.setEnabled(false);
+        Instructions.setVisible(false);
+        Instructions.setEnabled(false);
+        Review.setEnabled(false);
+        Review.setVisible(false);
+
+        OpeningScreen.setVisible(true);
+        OpeningScreen.setEnabled(true);
+        
+       
+        // Initlaize word list, this is where all possible anagrams of camera
+        // are kept. Found using this site: https://wordmaker.info/how-many/camera.html
+        wordList = new ArrayList<>();
+        
+            // Adding the anagrams to the ArrayList
+            wordList.add("CREAM");
+            wordList.add("MACER");
+            wordList.add("CAME");
+            wordList.add("CARE");
+            wordList.add("CRAM");
+            wordList.add("AREA");
+            wordList.add("MARC");
+            wordList.add("MARE");
+            wordList.add("RACE");
+            wordList.add("REAM");
+            wordList.add("ACRE");
+            wordList.add("ACME");
+            wordList.add("MAAR");
+            wordList.add("MACE");
+            wordList.add("MAC");
+            wordList.add("MAE");
+            wordList.add("REM");
+            wordList.add("MAR");
+            wordList.add("RAM");
+            wordList.add("REC");
+            wordList.add("ERA");
+            wordList.add("ARC");
+            wordList.add("ARE");
+            wordList.add("ARM");
+            wordList.add("CAM");
+            wordList.add("CAR");
+            wordList.add("EAR");
+            wordList.add("ACE");
+            wordList.add("AMA");  
+            
+    }
+    
+    
+// Initialize enteredWord list to keep track of user already entered words
+// (checks for repeats)
+private ArrayList<String> enteredWords = new ArrayList<>();  
+
+
+// Initialize word count, score, and first game variables 
+int score;
+int previousScore;
+// Changes the text on the closing screen if false
+boolean firstPlay = true;  
+    
+    
+// ALL TIMER CODE INSPRIED/TAUGHT TO ME BY: https://stackoverflow.com/questions/28337718/java-swing-timer-countdown
+// Did not copy this code, only used this to see what functions I need to create this 
+// therefore not citing as all my timer code is original 
+
+
+// Declare a timer object
+private Timer countdownTimer;
+
+// Initialize countdown variable of 120 seconds aka 2 minutes
+private int countdownSeconds = 120;
+
+
+// NECCESSARY FUNCTIONS
+
+
+// Function to update the timer display in the txtTimer text field
+private void updateTimerDisplay() {
+    
+    // Makes sure it shows in this format: 00:00 instead of seconds like this: 000
+    int minutes = countdownSeconds / 60;
+    int seconds = countdownSeconds % 60;
+    
+    // Store in string and show in txtTimer field
+    String timerText = String.format("%02d:%02d", minutes, seconds);
+    txtTimer.setText(timerText);
+    
+}
+
+
+// Actual timer function
+private void timer() {
+    
+    // Creates a new timer action that fires every second (1000 milliseconds) so 
+    // it visably can count down
+        countdownTimer = new Timer(1000, new ActionListener() {
+            
+        // Actual timer functionality code
+        public void actionPerformed(ActionEvent e) {
+            
+            // Minus one second and display ever second for the vsiable countdown
+            countdownSeconds--;
+            updateTimerDisplay();
+
+            // When the timer reaches 0 stop it and end the actual game and go to closing screen
+            if (countdownSeconds <= 0) { 
+                countdownTimer.stop();
+                ActualGame.setVisible(false);
+                ActualGame.setEnabled(false);
+                ClosingScreen.setVisible(true);
+                ClosingScreen.setEnabled(true);
+                
+                // If this was the first game theres no need to display the previous round
+                // score because it is non-existent
+                if (firstPlay){
+                    txtResult.setText("Great game! You found " + score + "/29 possible words!");
+                  
+                // If it is not first game, display score and previous score
+                } else {
+                    txtResult.setText("Great game! You found " + score + "/29 possible words!  Your score last round was " + previousScore + "/29 possible words!");
+                }
+            }
+        }  
+    });
+
+    // Actually starts the timer
+    countdownTimer.start();
+}
+    
+ 
+// Function to check if the letter 'A' is already present twice in the user word
+private boolean checkA(String word) {
+    
+    // Initialize a counter to keep track of occurances of 'A'
+    int count = 0;
+    
+    // Interate through each character in the users word
+    for (char c : word.toCharArray()) {
+        
+        // Add 1 to count if A is there
+        if (c == 'A') {
+            count++;
+            
+            // Checks if count is 2, if it is return true
+            if (count == 2) {
+                return true; // Letter 'A' already present twice
+            }
+        }
+    }
+    // If there is now triple+ A's return false
+    return false; 
+    
+}
+
+
+// Function to list all entered words
+private void listAll(){
+    
+// String builder so I have a mutable list that I can display in txtWordList
+ StringBuilder sb = new StringBuilder();
+ 
+        // Simple for loop through "enteredWords" list that appends each word
+        // and a new line to seperate them to the StringBuilder
+        for (int i = 0; i < enteredWords.size(); i++) {
+            sb.append(enteredWords.get(i));
+            sb.append("\n");
+        }
+        
+        //  At the end of the loop, displays the list in txtWordList field
+        txtWordList.setText(sb.toString());
+        
+    }
+
+
+    // NetBeans generated code for form design; not to be modified
+    @SuppressWarnings("unchecked")
+    // <editor-fold defaultstate="collapsed" desc="Generated Code">                          
+    private void initComponents() {
+
+        OpeningScreen = new javax.swing.JPanel();
+        subLabel = new javax.swing.JLabel();
+        titleLabel = new javax.swing.JLabel();
+        preLabel = new javax.swing.JLabel();
+        btnGuide = new javax.swing.JButton();
+        btnPlay = new javax.swing.JButton();
+        btnExit = new javax.swing.JButton();
+        credit1 = new javax.swing.JLabel();
+        jLabel18 = new javax.swing.JLabel();
+        ActualGame = new javax.swing.JPanel();
+        GameLabel = new javax.swing.JLabel();
+        btnC = new javax.swing.JButton();
+        btnA = new javax.swing.JButton();
+        btnM = new javax.swing.JButton();
+        btnE = new javax.swing.JButton();
+        btnR = new javax.swing.JButton();
+        btnA2 = new javax.swing.JButton();
+        txtWord = new javax.swing.JTextField();
+        instrLabel1 = new javax.swing.JLabel();
+        jLabel1 = new javax.swing.JLabel();
+        jLabel2 = new javax.swing.JLabel();
+        txtTimer = new javax.swing.JTextField();
+        timerLabel = new javax.swing.JLabel();
+        btnWordCheck = new javax.swing.JButton();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        txtWordList = new javax.swing.JTextArea();
+        jLabel3 = new javax.swing.JLabel();
+        btnClear = new javax.swing.JButton();
+        backspace = new javax.swing.JButton();
+        ClosingScreen = new javax.swing.JPanel();
+        overLabel = new javax.swing.JLabel();
+        preLabel2 = new javax.swing.JLabel();
+        txtResult = new javax.swing.JTextField();
+        btnPlayAgain = new javax.swing.JButton();
+        btnExit2 = new javax.swing.JButton();
+        credit3 = new javax.swing.JLabel();
+        btnReview = new javax.swing.JButton();
+        Instructions = new javax.swing.JPanel();
+        credit4 = new javax.swing.JLabel();
+        btnExit3 = new javax.swing.JButton();
+        btnMenu = new javax.swing.JButton();
+        jLabel4 = new javax.swing.JLabel();
+        jLabel5 = new javax.swing.JLabel();
+        jLabel6 = new javax.swing.JLabel();
+        jLabel7 = new javax.swing.JLabel();
+        jLabel8 = new javax.swing.JLabel();
+        jLabel9 = new javax.swing.JLabel();
+        jLabel10 = new javax.swing.JLabel();
+        Review = new javax.swing.JPanel();
+        jLabel11 = new javax.swing.JLabel();
+        jLabel12 = new javax.swing.JLabel();
+        jLabel13 = new javax.swing.JLabel();
+        btnExit4 = new javax.swing.JButton();
+        btnMenu2 = new javax.swing.JButton();
+        jLabel14 = new javax.swing.JLabel();
+        credit5 = new javax.swing.JLabel();
+        jLabel15 = new javax.swing.JLabel();
+        jLabel16 = new javax.swing.JLabel();
+        jLabel17 = new javax.swing.JLabel();
+
+        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setTitle("Anagrams");
+
+        OpeningScreen.setBackground(new java.awt.Color(189, 217, 249));
+
+        subLabel.setFont(new java.awt.Font("Adelle Sans Devanagari", 0, 22)); // NOI18N
+        subLabel.setForeground(new java.awt.Color(255, 255, 255));
+        subLabel.setText("                              A  T W I S T  O N  A  C L A S S I C  G A M E ");
+
+        titleLabel.setFont(new java.awt.Font("Adelle Sans Devanagari", 1, 52)); // NOI18N
+        titleLabel.setForeground(new java.awt.Color(255, 255, 255));
+        titleLabel.setText("C  A  M  E  R  A    A  N  A  G  R  A  M  S ");
+
+        preLabel.setFont(new java.awt.Font("Adelle Sans Devanagari", 0, 22)); // NOI18N
+        preLabel.setForeground(new java.awt.Color(255, 255, 255));
+        preLabel.setText("W E L C O M E  T O");
+
+        btnGuide.setBackground(new java.awt.Color(222, 236, 232));
+        btnGuide.setFont(new java.awt.Font("Adelle Sans Devanagari", 1, 14)); // NOI18N
+        btnGuide.setForeground(new java.awt.Color(189, 217, 249));
+        btnGuide.setText("I N S T R U C T I O N S");
+        btnGuide.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnGuideActionPerformed(evt);
+            }
+        });
+
+        btnPlay.setBackground(new java.awt.Color(222, 236, 232));
+        btnPlay.setFont(new java.awt.Font("Adelle Sans Devanagari", 1, 14)); // NOI18N
+        btnPlay.setForeground(new java.awt.Color(189, 217, 249));
+        btnPlay.setText("P L A Y");
+        btnPlay.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnPlayActionPerformed(evt);
+            }
+        });
+
+        btnExit.setBackground(new java.awt.Color(222, 236, 232));
+        btnExit.setFont(new java.awt.Font("Adelle Sans Devanagari", 1, 14)); // NOI18N
+        btnExit.setForeground(new java.awt.Color(189, 217, 249));
+        btnExit.setText("E X I T");
+        btnExit.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnExitActionPerformed(evt);
+            }
+        });
+
+        credit1.setFont(new java.awt.Font("Adelle Sans Devanagari", 3, 13)); // NOI18N
+        credit1.setForeground(new java.awt.Color(255, 255, 255));
+        credit1.setText("DEVELOPED BY:  MARIA JACKSON");
+
+        jLabel18.setFont(new java.awt.Font("Adelle Sans Devanagari", 1, 13)); // NOI18N
+        jLabel18.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel18.setText("REVIEW BEFORE YOU PLAY:");
+
+        javax.swing.GroupLayout OpeningScreenLayout = new javax.swing.GroupLayout(OpeningScreen);
+        OpeningScreen.setLayout(OpeningScreenLayout);
+        OpeningScreenLayout.setHorizontalGroup(
+            OpeningScreenLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(OpeningScreenLayout.createSequentialGroup()
+                .addGroup(OpeningScreenLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(OpeningScreenLayout.createSequentialGroup()
+                        .addGap(39, 39, 39)
+                        .addComponent(titleLabel))
+                    .addGroup(OpeningScreenLayout.createSequentialGroup()
+                        .addGap(348, 348, 348)
+                        .addComponent(preLabel))
+                    .addGroup(OpeningScreenLayout.createSequentialGroup()
+                        .addContainerGap()
+                        .addComponent(credit1))
+                    .addGroup(OpeningScreenLayout.createSequentialGroup()
+                        .addGap(96, 96, 96)
+                        .addGroup(OpeningScreenLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel18)
+                            .addGroup(OpeningScreenLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                .addGroup(OpeningScreenLayout.createSequentialGroup()
+                                    .addComponent(btnGuide, javax.swing.GroupLayout.PREFERRED_SIZE, 169, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addGap(89, 89, 89)
+                                    .addComponent(btnPlay, javax.swing.GroupLayout.PREFERRED_SIZE, 169, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addComponent(btnExit, javax.swing.GroupLayout.PREFERRED_SIZE, 169, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addComponent(subLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 688, javax.swing.GroupLayout.PREFERRED_SIZE)))))
+                .addContainerGap(40, Short.MAX_VALUE))
+        );
+        OpeningScreenLayout.setVerticalGroup(
+            OpeningScreenLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(OpeningScreenLayout.createSequentialGroup()
+                .addGap(134, 134, 134)
+                .addComponent(preLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(titleLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 46, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addComponent(subLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(32, 32, 32)
+                .addComponent(jLabel18)
+                .addGap(3, 3, 3)
+                .addGroup(OpeningScreenLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(btnGuide, javax.swing.GroupLayout.PREFERRED_SIZE, 69, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnPlay, javax.swing.GroupLayout.PREFERRED_SIZE, 69, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnExit, javax.swing.GroupLayout.PREFERRED_SIZE, 69, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 92, Short.MAX_VALUE)
+                .addComponent(credit1))
+        );
+
+        ActualGame.setBackground(new java.awt.Color(189, 217, 249));
+
+        GameLabel.setFont(new java.awt.Font("Adelle Sans Devanagari", 1, 21)); // NOI18N
+        GameLabel.setForeground(new java.awt.Color(255, 255, 255));
+        GameLabel.setText("C  A  M  E  R  A      A  N  A  G  R  A  M  S");
+
+        btnC.setBackground(new java.awt.Color(222, 236, 249));
+        btnC.setFont(new java.awt.Font("Adelle Sans Devanagari", 1, 69)); // NOI18N
+        btnC.setForeground(new java.awt.Color(189, 217, 249));
+        btnC.setText("C");
+        btnC.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnCActionPerformed(evt);
+            }
+        });
+
+        btnA.setBackground(new java.awt.Color(222, 236, 249));
+        btnA.setFont(new java.awt.Font("Adelle Sans Devanagari", 1, 69)); // NOI18N
+        btnA.setForeground(new java.awt.Color(189, 217, 249));
+        btnA.setText("A");
+        btnA.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnAActionPerformed(evt);
+            }
+        });
+
+        btnM.setBackground(new java.awt.Color(222, 236, 249));
+        btnM.setFont(new java.awt.Font("Adelle Sans Devanagari", 1, 69)); // NOI18N
+        btnM.setForeground(new java.awt.Color(189, 217, 249));
+        btnM.setText("M");
+        btnM.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnMActionPerformed(evt);
+            }
+        });
+
+        btnE.setBackground(new java.awt.Color(222, 236, 249));
+        btnE.setFont(new java.awt.Font("Adelle Sans Devanagari", 1, 69)); // NOI18N
+        btnE.setForeground(new java.awt.Color(189, 217, 249));
+        btnE.setText("E");
+        btnE.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnEActionPerformed(evt);
+            }
+        });
+
+        btnR.setBackground(new java.awt.Color(222, 236, 249));
+        btnR.setFont(new java.awt.Font("Adelle Sans Devanagari", 1, 69)); // NOI18N
+        btnR.setForeground(new java.awt.Color(189, 217, 249));
+        btnR.setText("R");
+        btnR.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnRActionPerformed(evt);
+            }
+        });
+
+        btnA2.setBackground(new java.awt.Color(222, 236, 249));
+        btnA2.setFont(new java.awt.Font("Adelle Sans Devanagari", 1, 69)); // NOI18N
+        btnA2.setForeground(new java.awt.Color(189, 217, 249));
+        btnA2.setText("A");
+        btnA2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnA2ActionPerformed(evt);
+            }
+        });
+
+        txtWord.setEditable(false);
+        txtWord.setBackground(new java.awt.Color(255, 255, 255));
+        txtWord.setFont(new java.awt.Font("Adelle Sans Devanagari", 1, 24)); // NOI18N
+        txtWord.setForeground(new java.awt.Color(189, 217, 249));
+
+        instrLabel1.setFont(new java.awt.Font("Adelle Sans Devanagari", 1, 18)); // NOI18N
+        instrLabel1.setForeground(new java.awt.Color(255, 255, 255));
+        instrLabel1.setText("Click the letter you need to add to your word:");
+
+        jLabel1.setFont(new java.awt.Font("Adelle Sans Devanagari", 1, 18)); // NOI18N
+        jLabel1.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel1.setText("And the letter will appear here! :");
+
+        jLabel2.setFont(new java.awt.Font("Adelle Sans Devanagari", 3, 13)); // NOI18N
+        jLabel2.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel2.setText("DEVELOPED BY:  MARIA JACKSON");
+
+        txtTimer.setEditable(false);
+        txtTimer.setFont(new java.awt.Font("Adelle Sans Devanagari", 1, 20)); // NOI18N
+        txtTimer.setForeground(new java.awt.Color(189, 217, 249));
+
+        timerLabel.setFont(new java.awt.Font("Adelle Sans Devanagari", 1, 18)); // NOI18N
+        timerLabel.setForeground(new java.awt.Color(255, 255, 255));
+        timerLabel.setText("T I M E   R E M A I N I N G :");
+
+        btnWordCheck.setBackground(new java.awt.Color(222, 236, 236));
+        btnWordCheck.setFont(new java.awt.Font("Adelle Sans Devanagari", 1, 12)); // NOI18N
+        btnWordCheck.setForeground(new java.awt.Color(189, 217, 249));
+        btnWordCheck.setText("S U B M I T");
+        btnWordCheck.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnWordCheckActionPerformed(evt);
+            }
+        });
+
+        txtWordList.setColumns(20);
+        txtWordList.setFont(new java.awt.Font("Adelle Sans Devanagari", 1, 14)); // NOI18N
+        txtWordList.setForeground(new java.awt.Color(189, 217, 249));
+        txtWordList.setRows(5);
+        jScrollPane1.setViewportView(txtWordList);
+
+        jLabel3.setFont(new java.awt.Font("Adelle Sans Devanagari", 1, 14)); // NOI18N
+        jLabel3.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel3.setText("YOUR WORD LIST:");
+
+        btnClear.setBackground(new java.awt.Color(222, 236, 236));
+        btnClear.setFont(new java.awt.Font("Adelle Sans Devanagari", 1, 12)); // NOI18N
+        btnClear.setForeground(new java.awt.Color(189, 217, 249));
+        btnClear.setText("C L E A R");
+        btnClear.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnClearActionPerformed(evt);
+            }
+        });
+
+        backspace.setBackground(new java.awt.Color(222, 236, 236));
+        backspace.setFont(new java.awt.Font("Adelle Sans Devanagari", 1, 7)); // NOI18N
+        backspace.setForeground(new java.awt.Color(189, 217, 249));
+        backspace.setText("B A C K  - -S P A C E");
+        backspace.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                backspaceActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout ActualGameLayout = new javax.swing.GroupLayout(ActualGame);
+        ActualGame.setLayout(ActualGameLayout);
+        ActualGameLayout.setHorizontalGroup(
+            ActualGameLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(ActualGameLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jLabel2)
+                .addGap(15, 15, 15))
+            .addGroup(ActualGameLayout.createSequentialGroup()
+                .addGap(19, 19, 19)
+                .addGroup(ActualGameLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(ActualGameLayout.createSequentialGroup()
+                        .addComponent(GameLabel)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(timerLabel)
+                        .addGap(8, 8, 8))
+                    .addGroup(ActualGameLayout.createSequentialGroup()
+                        .addGroup(ActualGameLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(instrLabel1)
+                            .addGroup(ActualGameLayout.createSequentialGroup()
+                                .addComponent(btnC, javax.swing.GroupLayout.PREFERRED_SIZE, 127, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(btnA, javax.swing.GroupLayout.PREFERRED_SIZE, 127, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(btnM, javax.swing.GroupLayout.PREFERRED_SIZE, 127, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(btnE, javax.swing.GroupLayout.PREFERRED_SIZE, 127, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(18, 18, 18)
+                                .addComponent(btnR, javax.swing.GroupLayout.PREFERRED_SIZE, 127, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(btnA2, javax.swing.GroupLayout.PREFERRED_SIZE, 127, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(jLabel1)
+                            .addGroup(ActualGameLayout.createSequentialGroup()
+                                .addComponent(txtWord, javax.swing.GroupLayout.PREFERRED_SIZE, 490, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(18, 18, 18)
+                                .addComponent(btnWordCheck, javax.swing.GroupLayout.PREFERRED_SIZE, 89, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(18, 18, 18)
+                                .addComponent(btnClear, javax.swing.GroupLayout.PREFERRED_SIZE, 93, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(18, 18, 18)
+                                .addComponent(backspace, javax.swing.GroupLayout.PREFERRED_SIZE, 93, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addGap(0, 1, Short.MAX_VALUE)))
+                .addGroup(ActualGameLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(ActualGameLayout.createSequentialGroup()
+                        .addComponent(txtTimer, javax.swing.GroupLayout.PREFERRED_SIZE, 145, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(0, 8, Short.MAX_VALUE))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, ActualGameLayout.createSequentialGroup()
+                        .addGroup(ActualGameLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel3))
+                        .addGap(15, 15, 15))))
+        );
+        ActualGameLayout.setVerticalGroup(
+            ActualGameLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(ActualGameLayout.createSequentialGroup()
+                .addGap(18, 18, 18)
+                .addGroup(ActualGameLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(GameLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addGroup(ActualGameLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(timerLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(txtTimer)))
+                .addGroup(ActualGameLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(ActualGameLayout.createSequentialGroup()
+                        .addGap(69, 69, 69)
+                        .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 17, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, ActualGameLayout.createSequentialGroup()
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(instrLabel1)))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(ActualGameLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addGroup(ActualGameLayout.createSequentialGroup()
+                        .addGroup(ActualGameLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(btnC, javax.swing.GroupLayout.PREFERRED_SIZE, 127, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(btnA, javax.swing.GroupLayout.PREFERRED_SIZE, 127, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(btnM, javax.swing.GroupLayout.PREFERRED_SIZE, 127, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(btnE, javax.swing.GroupLayout.PREFERRED_SIZE, 127, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(btnR, javax.swing.GroupLayout.PREFERRED_SIZE, 127, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(btnA2, javax.swing.GroupLayout.PREFERRED_SIZE, 127, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(49, 49, 49)
+                        .addComponent(jLabel1)
+                        .addGap(18, 18, 18)
+                        .addGroup(ActualGameLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(txtWord)
+                            .addComponent(btnWordCheck, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(backspace, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(btnClear, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addGap(0, 18, Short.MAX_VALUE))
+                    .addComponent(jScrollPane1))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 23, Short.MAX_VALUE)
+                .addComponent(jLabel2))
+        );
+
+        ClosingScreen.setBackground(new java.awt.Color(189, 217, 249));
+
+        overLabel.setFont(new java.awt.Font("Adelle Sans Devanagari", 1, 80)); // NOI18N
+        overLabel.setForeground(new java.awt.Color(255, 255, 255));
+        overLabel.setText("G  A  M  E    O  V  E  R");
+
+        preLabel2.setFont(new java.awt.Font("Adelle Sans Devanagari", 1, 18)); // NOI18N
+        preLabel2.setForeground(new java.awt.Color(255, 255, 255));
+        preLabel2.setText("C  A  M  E  R  A     A  N  A  G  R  A  M  S");
+
+        txtResult.setEditable(false);
+        txtResult.setFont(new java.awt.Font("Adelle Sans Devanagari", 1, 14)); // NOI18N
+        txtResult.setForeground(new java.awt.Color(189, 217, 249));
+
+        btnPlayAgain.setBackground(new java.awt.Color(222, 236, 232));
+        btnPlayAgain.setFont(new java.awt.Font("Adelle Sans Devanagari", 1, 20)); // NOI18N
+        btnPlayAgain.setForeground(new java.awt.Color(189, 217, 247));
+        btnPlayAgain.setText("P L A Y    A G A I N");
+        btnPlayAgain.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnPlayAgainActionPerformed(evt);
+            }
+        });
+
+        btnExit2.setBackground(new java.awt.Color(222, 236, 232));
+        btnExit2.setFont(new java.awt.Font("Adelle Sans Devanagari", 1, 20)); // NOI18N
+        btnExit2.setForeground(new java.awt.Color(189, 217, 247));
+        btnExit2.setText("E X I T");
+        btnExit2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnExit2ActionPerformed(evt);
+            }
+        });
+
+        credit3.setFont(new java.awt.Font("Adelle Sans Devanagari", 3, 13)); // NOI18N
+        credit3.setForeground(new java.awt.Color(255, 255, 255));
+        credit3.setText("DEVELOPED BY:  MARIA JACKSON");
+
+        btnReview.setBackground(new java.awt.Color(222, 236, 232));
+        btnReview.setFont(new java.awt.Font("Adelle Sans Devanagari", 1, 14)); // NOI18N
+        btnReview.setForeground(new java.awt.Color(189, 217, 249));
+        btnReview.setText("REVIEW INSTRUCTIONS");
+        btnReview.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnReviewActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout ClosingScreenLayout = new javax.swing.GroupLayout(ClosingScreen);
+        ClosingScreen.setLayout(ClosingScreenLayout);
+        ClosingScreenLayout.setHorizontalGroup(
+            ClosingScreenLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(ClosingScreenLayout.createSequentialGroup()
+                .addGap(99, 99, 99)
+                .addGroup(ClosingScreenLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, ClosingScreenLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, ClosingScreenLayout.createSequentialGroup()
+                            .addGap(58, 58, 58)
+                            .addComponent(btnPlayAgain, javax.swing.GroupLayout.PREFERRED_SIZE, 230, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(btnExit2, javax.swing.GroupLayout.PREFERRED_SIZE, 230, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGap(59, 59, 59))
+                        .addComponent(overLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(txtResult, javax.swing.GroupLayout.PREFERRED_SIZE, 688, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, ClosingScreenLayout.createSequentialGroup()
+                        .addComponent(preLabel2)
+                        .addGap(200, 200, 200)))
+                .addContainerGap(103, Short.MAX_VALUE))
+            .addGroup(ClosingScreenLayout.createSequentialGroup()
+                .addComponent(credit3)
+                .addGap(0, 0, Short.MAX_VALUE))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, ClosingScreenLayout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(btnReview)
+                .addContainerGap())
+        );
+        ClosingScreenLayout.setVerticalGroup(
+            ClosingScreenLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, ClosingScreenLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(btnReview, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 68, Short.MAX_VALUE)
+                .addComponent(preLabel2)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(overLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 67, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(44, 44, 44)
+                .addComponent(txtResult, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(37, 37, 37)
+                .addGroup(ClosingScreenLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(btnPlayAgain, javax.swing.GroupLayout.PREFERRED_SIZE, 87, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnExit2, javax.swing.GroupLayout.PREFERRED_SIZE, 87, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(60, 60, 60)
+                .addComponent(credit3))
+        );
+
+        Instructions.setBackground(new java.awt.Color(189, 217, 249));
+
+        credit4.setFont(new java.awt.Font("Adelle Sans Devanagari", 3, 13)); // NOI18N
+        credit4.setForeground(new java.awt.Color(255, 255, 255));
+        credit4.setText("DEVELOPED BY:  MARIA JACKSON");
+
+        btnExit3.setBackground(new java.awt.Color(222, 236, 232));
+        btnExit3.setFont(new java.awt.Font("Adelle Sans Devanagari", 1, 18)); // NOI18N
+        btnExit3.setForeground(new java.awt.Color(189, 217, 249));
+        btnExit3.setText("Exit Game");
+        btnExit3.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnExit3ActionPerformed(evt);
+            }
+        });
+
+        btnMenu.setBackground(new java.awt.Color(222, 236, 232));
+        btnMenu.setFont(new java.awt.Font("Adelle Sans Devanagari", 1, 14)); // NOI18N
+        btnMenu.setForeground(new java.awt.Color(189, 217, 249));
+        btnMenu.setText("Back to Menu");
+        btnMenu.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnMenuActionPerformed(evt);
+            }
+        });
+
+        jLabel4.setFont(new java.awt.Font("Adelle Sans Devanagari", 1, 24)); // NOI18N
+        jLabel4.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel4.setText("C A M E R A   A N A G R A M S :  I N S T R U C T I O N S");
+
+        jLabel5.setFont(new java.awt.Font("Adelle Sans Devanagari", 1, 18)); // NOI18N
+        jLabel5.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel5.setText("\"Camera Anagrams\" puts a small twist on the classic game \"Anagrams!\" ");
+
+        jLabel6.setFont(new java.awt.Font("Adelle Sans Devanagari", 1, 18)); // NOI18N
+        jLabel6.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel6.setText("In this version, players have 2 minutes to spell as many words as possible using only the letters found");
+
+        jLabel7.setFont(new java.awt.Font("Adelle Sans Devanagari", 1, 18)); // NOI18N
+        jLabel7.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel7.setText("in the word \"C A M E R A\". Players cannot use a letter more times than it appears in \"C A M E R A\",  so");
+
+        jLabel8.setFont(new java.awt.Font("Adelle Sans Devanagari", 1, 18)); // NOI18N
+        jLabel8.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel8.setText("C, E, R, and M can only be used once per word, and A can only be used twice per word. Repeat words");
+
+        jLabel9.setFont(new java.awt.Font("Adelle Sans Devanagari", 1, 18)); // NOI18N
+        jLabel9.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel9.setText("You can replay as many times as you want to try and find all 29 anagrams!");
+
+        jLabel10.setFont(new java.awt.Font("Adelle Sans Devanagari", 1, 18)); // NOI18N
+        jLabel10.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel10.setText("are not allowed, the word \"C A M E R A\" itself doesn't count, and there are 29 possible words to form. ");
+
+        javax.swing.GroupLayout InstructionsLayout = new javax.swing.GroupLayout(Instructions);
+        Instructions.setLayout(InstructionsLayout);
+        InstructionsLayout.setHorizontalGroup(
+            InstructionsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(InstructionsLayout.createSequentialGroup()
+                .addComponent(credit4)
+                .addGap(0, 0, Short.MAX_VALUE))
+            .addGroup(InstructionsLayout.createSequentialGroup()
+                .addGroup(InstructionsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(InstructionsLayout.createSequentialGroup()
+                        .addGap(37, 37, 37)
+                        .addGroup(InstructionsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(jLabel6, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jLabel7, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jLabel8, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jLabel10, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addGroup(InstructionsLayout.createSequentialGroup()
+                                .addGap(112, 112, 112)
+                                .addComponent(jLabel9))))
+                    .addGroup(InstructionsLayout.createSequentialGroup()
+                        .addGap(150, 150, 150)
+                        .addGroup(InstructionsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel5)
+                            .addGroup(InstructionsLayout.createSequentialGroup()
+                                .addGap(8, 8, 8)
+                                .addComponent(jLabel4)))))
+                .addContainerGap(31, Short.MAX_VALUE))
+            .addGroup(InstructionsLayout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(btnMenu, javax.swing.GroupLayout.PREFERRED_SIZE, 123, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(196, 196, 196)
+                .addComponent(btnExit3, javax.swing.GroupLayout.PREFERRED_SIZE, 123, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(227, 227, 227))
+        );
+        InstructionsLayout.setVerticalGroup(
+            InstructionsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, InstructionsLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jLabel4)
+                .addGap(24, 24, 24)
+                .addComponent(jLabel5)
+                .addGap(18, 18, 18)
+                .addComponent(jLabel6)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jLabel7)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jLabel8)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jLabel10)
+                .addGap(18, 18, 18)
+                .addComponent(jLabel9)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 37, Short.MAX_VALUE)
+                .addGroup(InstructionsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(btnExit3, javax.swing.GroupLayout.PREFERRED_SIZE, 62, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnMenu, javax.swing.GroupLayout.PREFERRED_SIZE, 62, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(42, 42, 42)
+                .addComponent(credit4))
+        );
+
+        Review.setBackground(new java.awt.Color(189, 217, 249));
+
+        jLabel11.setFont(new java.awt.Font("Adelle Sans Devanagari", 1, 18)); // NOI18N
+        jLabel11.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel11.setText("C, E, R, and M can only be used once per word, and A can only be used twice per word. Repeat words");
+
+        jLabel12.setFont(new java.awt.Font("Adelle Sans Devanagari", 1, 18)); // NOI18N
+        jLabel12.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel12.setText("You can replay as many times as you want to try and find all 29 anagrams!");
+
+        jLabel13.setFont(new java.awt.Font("Adelle Sans Devanagari", 1, 18)); // NOI18N
+        jLabel13.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel13.setText("are not allowed, the word \"C A M E R A\" itself doesn't count, and there are 29 possible words to form. ");
+
+        btnExit4.setBackground(new java.awt.Color(222, 236, 232));
+        btnExit4.setFont(new java.awt.Font("Adelle Sans Devanagari", 1, 18)); // NOI18N
+        btnExit4.setForeground(new java.awt.Color(189, 217, 249));
+        btnExit4.setText("Exit Game");
+        btnExit4.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnExit4ActionPerformed(evt);
+            }
+        });
+
+        btnMenu2.setBackground(new java.awt.Color(222, 236, 232));
+        btnMenu2.setFont(new java.awt.Font("Adelle Sans Devanagari", 1, 14)); // NOI18N
+        btnMenu2.setForeground(new java.awt.Color(189, 217, 249));
+        btnMenu2.setText("Back to Menu");
+        btnMenu2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnMenu2ActionPerformed(evt);
+            }
+        });
+
+        jLabel14.setFont(new java.awt.Font("Adelle Sans Devanagari", 1, 24)); // NOI18N
+        jLabel14.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel14.setText("C A M E R A   A N A G R A M S :  I N S T R U C T I O N S");
+
+        credit5.setFont(new java.awt.Font("Adelle Sans Devanagari", 3, 13)); // NOI18N
+        credit5.setForeground(new java.awt.Color(255, 255, 255));
+        credit5.setText("DEVELOPED BY:  MARIA JACKSON");
+
+        jLabel15.setFont(new java.awt.Font("Adelle Sans Devanagari", 1, 18)); // NOI18N
+        jLabel15.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel15.setText("\"Camera Anagrams\" puts a small twist on the classic game \"Anagrams!\" ");
+
+        jLabel16.setFont(new java.awt.Font("Adelle Sans Devanagari", 1, 18)); // NOI18N
+        jLabel16.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel16.setText("In this version, players have 2 minutes to spell as many words as possible using only the letters found");
+
+        jLabel17.setFont(new java.awt.Font("Adelle Sans Devanagari", 1, 18)); // NOI18N
+        jLabel17.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel17.setText("in the word \"C A M E R A\". Players cannot use a letter more times than it appears in \"C A M E R A\",  so");
+
+        javax.swing.GroupLayout ReviewLayout = new javax.swing.GroupLayout(Review);
+        Review.setLayout(ReviewLayout);
+        ReviewLayout.setHorizontalGroup(
+            ReviewLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(ReviewLayout.createSequentialGroup()
+                .addComponent(credit5)
+                .addGap(0, 0, Short.MAX_VALUE))
+            .addGroup(ReviewLayout.createSequentialGroup()
+                .addGroup(ReviewLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(ReviewLayout.createSequentialGroup()
+                        .addGap(37, 37, 37)
+                        .addGroup(ReviewLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(jLabel16, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jLabel17, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jLabel11, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jLabel13, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addGroup(ReviewLayout.createSequentialGroup()
+                                .addGap(112, 112, 112)
+                                .addComponent(jLabel12))))
+                    .addGroup(ReviewLayout.createSequentialGroup()
+                        .addGap(150, 150, 150)
+                        .addGroup(ReviewLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel15)
+                            .addGroup(ReviewLayout.createSequentialGroup()
+                                .addGap(8, 8, 8)
+                                .addComponent(jLabel14)))))
+                .addContainerGap(31, Short.MAX_VALUE))
+            .addGroup(ReviewLayout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(btnExit4, javax.swing.GroupLayout.PREFERRED_SIZE, 123, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(154, 154, 154)
+                .addComponent(btnMenu2, javax.swing.GroupLayout.PREFERRED_SIZE, 123, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(241, 241, 241))
+        );
+        ReviewLayout.setVerticalGroup(
+            ReviewLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, ReviewLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jLabel14)
+                .addGap(24, 24, 24)
+                .addComponent(jLabel15)
+                .addGap(18, 18, 18)
+                .addComponent(jLabel16)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jLabel17)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jLabel11)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jLabel13)
+                .addGap(18, 18, 18)
+                .addComponent(jLabel12)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 37, Short.MAX_VALUE)
+                .addGroup(ReviewLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(btnExit4, javax.swing.GroupLayout.PREFERRED_SIZE, 62, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnMenu2, javax.swing.GroupLayout.PREFERRED_SIZE, 62, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(42, 42, 42)
+                .addComponent(credit5))
+        );
+
+        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
+        getContentPane().setLayout(layout);
+        layout.setHorizontalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(ActualGame, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(layout.createSequentialGroup()
+                    .addGap(0, 0, Short.MAX_VALUE)
+                    .addComponent(OpeningScreen, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGap(0, 0, Short.MAX_VALUE)))
+            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(layout.createSequentialGroup()
+                    .addGap(0, 0, Short.MAX_VALUE)
+                    .addComponent(ClosingScreen, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGap(0, 0, Short.MAX_VALUE)))
+            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(layout.createSequentialGroup()
+                    .addGap(0, 0, Short.MAX_VALUE)
+                    .addComponent(Instructions, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGap(0, 0, Short.MAX_VALUE)))
+            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(layout.createSequentialGroup()
+                    .addGap(0, 0, Short.MAX_VALUE)
+                    .addComponent(Review, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGap(0, 0, Short.MAX_VALUE)))
+        );
+        layout.setVerticalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(ActualGame, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(layout.createSequentialGroup()
+                    .addGap(0, 0, Short.MAX_VALUE)
+                    .addComponent(OpeningScreen, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGap(0, 0, Short.MAX_VALUE)))
+            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(layout.createSequentialGroup()
+                    .addGap(0, 0, Short.MAX_VALUE)
+                    .addComponent(ClosingScreen, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGap(0, 0, Short.MAX_VALUE)))
+            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(layout.createSequentialGroup()
+                    .addGap(0, 0, Short.MAX_VALUE)
+                    .addComponent(Instructions, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGap(0, 0, Short.MAX_VALUE)))
+            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(layout.createSequentialGroup()
+                    .addGap(0, 0, Short.MAX_VALUE)
+                    .addComponent(Review, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGap(0, 0, Short.MAX_VALUE)))
+        );
+
+        pack();
+    }// </editor-fold>                        
+
+    
+// CODE FOR ALL BUTTONS   
+    
+// "Instructions" button code
+    private void btnGuideActionPerformed(java.awt.event.ActionEvent evt) {                                         
+
+    // Disable/invisible opening screen; show instructions screen
+    Instructions.setVisible(true);
+    Instructions.setEnabled(true);
+    OpeningScreen.setVisible(false);
+    OpeningScreen.setEnabled(false);
+        
+    }                                        
+
+    
+// "Instructions: Exit" button code
+    private void btnExit3ActionPerformed(java.awt.event.ActionEvent evt) {                                         
+        
+        // Just exit the program
+        System.exit(0);
+        
+    }                                        
+
+
+// "Back to Menu" button code
+    private void btnMenuActionPerformed(java.awt.event.ActionEvent evt) {                                        
+        
+    // Exit invisible panel, go back to opening screen panel
+    Instructions.setVisible(false);
+    Instructions.setEnabled(false);
+    OpeningScreen.setVisible(true);
+    OpeningScreen.setEnabled(true);
+        
+    }                                       
+
+    
+// "Closing Screen: Exit" button code
+    private void btnExit2ActionPerformed(java.awt.event.ActionEvent evt) {                                         
+        
+        // Just exit the program
+        System.exit(0);
+        
+    }                                        
+
+    
+// "Play Again" button code
+    private void btnPlayAgainActionPerformed(java.awt.event.ActionEvent evt) {                                             
+        
+    // Reset variables for repeat games; store previousScore value
+    previousScore = score;
+    score = 0;
+    
+    firstPlay = false;
+
+    enteredWords = new ArrayList<>();
+
+    // Clear neccessary text fields
+    txtWord.setText("");
+    txtWordList.setText("");
+    
+    // Ensure timer is stopped
+    if (countdownTimer != null) {
+        countdownTimer.stop();
+    }
+    // Reset countdownSeconds value back to 2 minutes (120 seconds)
+    countdownSeconds = 120;
+
+    // Update the timer display to show 2:00 initially
+    updateTimerDisplay();
+        
+    // Set off timer
+    timer(); 
+
+    // Leave and disable closing screen; back to actual game screen
+    ActualGame.setVisible(true);
+    ActualGame.setEnabled(true);
+    ClosingScreen.setVisible(false);
+    ClosingScreen.setEnabled(false);
+
+          
+    }                                            
+
+    
+// "Play" button code
+    private void btnPlayActionPerformed(java.awt.event.ActionEvent evt) {                                        
+        
+        // Disable and make opening screen invisible; switch to game screen
+        ActualGame.setVisible(true);
+        ActualGame.setEnabled(true);
+        OpeningScreen.setVisible(false);
+        OpeningScreen.setEnabled(false);
+        
+        // Update the timer display to show 2:00 initially
+        updateTimerDisplay();
+        
+        // Set off timer
+        timer();
+  
+    }                                       
+
+    
+// "Opening Screen: Exit" button code
+    private void btnExitActionPerformed(java.awt.event.ActionEvent evt) {                                        
+        
+        // Just exit the program
+        System.exit(0);
+        
+    }                                       
+
+    
+// "Submit Word" button
+    private void btnWordCheckActionPerformed(java.awt.event.ActionEvent evt) {                                             
+
+        // Create string of the text in the txtWord box (the user word)
+        String word = txtWord.getText();
+        
+        // See if the user has already entered this word by checking enteredWords list
+        if (enteredWords.contains(word)) {
+            
+            // If they have, error pane
+            JOptionPane.showMessageDialog(this, "You have already entered this word.", "Error", JOptionPane.ERROR_MESSAGE);
+        
+        // If not a repeat word, check if it is a valid anagram of camera by searching the wordList
+        } else if (wordList.contains(word)) {
+            
+            // If it is, add 1 to score and show success message
+            score++; 
+            JOptionPane.showMessageDialog(this, "You found an anagram, score + 1! Your score is now: " + score + "/29 possible words!", "Success", JOptionPane.INFORMATION_MESSAGE);
+            
+            // Then add said word to enteredWords list to prevent repeats and list the word for the user
+            enteredWords.add(word); 
+            listAll();
+            
+        // If not a valid anagram, display error message saying so
+        } else {
+            JOptionPane.showMessageDialog(this, "Unfortunately, that is not an anagram of 'C A M E R A'", "Error", JOptionPane.ERROR_MESSAGE);
+        }
+        
+        // Clear the txtWord text field for further input
+        txtWord.setText(""); 
+
+    }                                            
+
+    
+// "2nd A" button code
+    private void btnA2ActionPerformed(java.awt.event.ActionEvent evt) {                                      
+
+        // Store txtWord contents in string variable
+        String currentWord = txtWord.getText();
+        
+        // Check if has already been used twice
+        if (checkA(currentWord)) {
+            
+            // Display an error pane if present twice already
+            JOptionPane.showMessageDialog(this, "The letter 'A' is already repeated twice in this word. Remember: C, M, E, and R can only be used once per word, and A can only be used twice per word.", "Error", JOptionPane.ERROR_MESSAGE);
+       
+        // If not, add to txtWord field
+        } else {
+            txtWord.setText(currentWord + "A");
+        }
+
+    }                                     
+
+    
+// "R" button code
+    private void btnRActionPerformed(java.awt.event.ActionEvent evt) {                                     
+
+        // Add the letter 'R' to the txtWord field if not already present; display
+        // error if it is
+        String currentWord = txtWord.getText();
+        if (!currentWord.contains("R")) {
+            txtWord.setText(currentWord + "R");
+        } else {
+            JOptionPane.showMessageDialog(this, "The letter 'R' has already used in this word. Remember: C, M, E, and R can only be used once per word, and A can only be used twice per word", "Error", JOptionPane.ERROR_MESSAGE);
+        }
+
+    }                                    
+
+    
+// "E" button code
+    private void btnEActionPerformed(java.awt.event.ActionEvent evt) {                                     
+
+        // Add the letter 'E' to the txtWord field if not already present; display
+        // error if it is
+        String currentWord = txtWord.getText();
+        if (!currentWord.contains("E")) {
+            txtWord.setText(currentWord + "E");
+        } else {
+            JOptionPane.showMessageDialog(this, "The letter 'E' has already been used in this word. Remember: C, M, E, and R can only be used once per word, and A can only be used twice per word", "Error", JOptionPane.ERROR_MESSAGE);
+        }
+
+    }                                    
+
+    
+// "M" button code
+    private void btnMActionPerformed(java.awt.event.ActionEvent evt) {                                     
+
+        // Add the letter 'M' to the txtWord field if not already present; display error 
+        // if it is
+        String currentWord = txtWord.getText();
+        if (!currentWord.contains("M")) {
+            txtWord.setText(currentWord + "M");
+        } else {
+            JOptionPane.showMessageDialog(this, "The letter 'M' has already been used in this word. Remember: C, M, E, and R can only be used once per word, and A can only be used twice per word", "Error", JOptionPane.ERROR_MESSAGE);
+        }
+
+    }                                    
+
+    
+// "A" button code
+    private void btnAActionPerformed(java.awt.event.ActionEvent evt) {                                     
+
+        // Store txtWord contents in string variable
+        String currentWord = txtWord.getText();
+        
+        // Check if has already been used twice
+        if (checkA(currentWord)) {
+            
+            // Display an error pane if present twice already
+            JOptionPane.showMessageDialog(this, "The letter 'A' is already repeated twice in this word. Remember: C, M, E, and R can only be used once per word, and A can only be used twice per word.", "Error", JOptionPane.ERROR_MESSAGE);
+       
+        // If not, add to txtWord field
+        } else {
+            txtWord.setText(currentWord + "A");
+        }
+
+    }                                    
+
+    
+// "C" button code
+    private void btnCActionPerformed(java.awt.event.ActionEvent evt) {                                     
+
+        // Add the letter 'C' to the txtWord field if not already present; display
+        // error if it is
+        String currentWord = txtWord.getText();
+        if (!currentWord.contains("C")) {
+            txtWord.setText(currentWord + "C");
+        } else {
+            JOptionPane.showMessageDialog(this, "The letter 'C' has already used in this word. Remember: C, M, E, and R can only be used once per word, and A can only be used twice per word.", "Error", JOptionPane.ERROR_MESSAGE);
+        }
+
+    }                                    
+
+
+// "Clear" button code
+    private void btnClearActionPerformed(java.awt.event.ActionEvent evt) {                                         
+        
+        // Clear txtWord text field by setting it to an empty string
+        txtWord.setText("");
+        
+    }                                        
+
+    
+// "Closing Screen: Exit Game" button code
+    private void btnExit4ActionPerformed(java.awt.event.ActionEvent evt) {                                         
+        
+        // Just exit the program
+        System.exit(0);
+         
+    }                                        
+
+
+// "Closing Screen: Back to Menu" button code   
+    private void btnMenu2ActionPerformed(java.awt.event.ActionEvent evt) {                                         
+    
+       // Disable and make instructions screen invisible; switch back to closing screen
+        Review.setVisible(false);
+        Review.setEnabled(false);
+        ClosingScreen.setVisible(true);
+        ClosingScreen.setEnabled(true);   
+        
+    }                                        
+
+    
+// "Review Instructions" button code
+    private void btnReviewActionPerformed(java.awt.event.ActionEvent evt) {                                          
+    
+    // Disable and make closing screen invisible; switch to instructions screen
+    Review.setVisible(true);
+    Review.setEnabled(true);
+    ClosingScreen.setVisible(false);
+    ClosingScreen.setEnabled(false); 
+    
+    }                                         
+
+    
+// "Back-space" button code
+    private void backspaceActionPerformed(java.awt.event.ActionEvent evt) {                                          
+    
+    // Store txtWord contents in string variable
+    String currentWord = txtWord.getText();
+    
+    // If the txtWord field is NOT empty
+    if (!currentWord.isEmpty()) {
+        
+        // Create updated word string with one less character on it
+        String updatedWord = currentWord.substring(0, currentWord.length() - 1);
+        
+        // Set txtWord field to the updatedWord string
+        txtWord.setText(updatedWord);
+        
+    // If the field is empty, display error message
+    } else {
+        JOptionPane.showMessageDialog(this, "No letters to back-space.", "Error", JOptionPane.ERROR_MESSAGE);
+    }
+
+    }                                         
+
+    
+    // NetBeans generated code, @param args the command line arguments 
+    public static void main(String args[]) {
+        /* Set the Nimbus look and feel */
+        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
+        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
+         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
+         */
+        try {
+            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
+                if ("Nimbus".equals(info.getName())) {
+                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
+                    break;
+                }
+            }
+        } catch (ClassNotFoundException ex) {
+            java.util.logging.Logger.getLogger(JavaAnagrams.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (InstantiationException ex) {
+            java.util.logging.Logger.getLogger(JavaAnagrams.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (IllegalAccessException ex) {
+            java.util.logging.Logger.getLogger(JavaAnagrams.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
+            java.util.logging.Logger.getLogger(JavaAnagrams.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        }
+        //</editor-fold>
+
+        /* Create and display the form */
+        java.awt.EventQueue.invokeLater(new Runnable() {
+            public void run() {
+                new JavaAnagrams().setVisible(true);
+            }
+        });
+    }
+
+    
+// NetBeans generated variables; not to be modfied
+    // Variables declaration - do not modify                     
+    private javax.swing.JPanel ActualGame;
+    private javax.swing.JPanel ClosingScreen;
+    private javax.swing.JLabel GameLabel;
+    private javax.swing.JPanel Instructions;
+    private javax.swing.JPanel OpeningScreen;
+    private javax.swing.JPanel Review;
+    private javax.swing.JButton backspace;
+    private javax.swing.JButton btnA;
+    private javax.swing.JButton btnA2;
+    private javax.swing.JButton btnC;
+    private javax.swing.JButton btnClear;
+    private javax.swing.JButton btnE;
+    private javax.swing.JButton btnExit;
+    private javax.swing.JButton btnExit2;
+    private javax.swing.JButton btnExit3;
+    private javax.swing.JButton btnExit4;
+    private javax.swing.JButton btnGuide;
+    private javax.swing.JButton btnM;
+    private javax.swing.JButton btnMenu;
+    private javax.swing.JButton btnMenu2;
+    private javax.swing.JButton btnPlay;
+    private javax.swing.JButton btnPlayAgain;
+    private javax.swing.JButton btnR;
+    private javax.swing.JButton btnReview;
+    private javax.swing.JButton btnWordCheck;
+    private javax.swing.JLabel credit1;
+    private javax.swing.JLabel credit3;
+    private javax.swing.JLabel credit4;
+    private javax.swing.JLabel credit5;
+    private javax.swing.JLabel instrLabel1;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel10;
+    private javax.swing.JLabel jLabel11;
+    private javax.swing.JLabel jLabel12;
+    private javax.swing.JLabel jLabel13;
+    private javax.swing.JLabel jLabel14;
+    private javax.swing.JLabel jLabel15;
+    private javax.swing.JLabel jLabel16;
+    private javax.swing.JLabel jLabel17;
+    private javax.swing.JLabel jLabel18;
+    private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel5;
+    private javax.swing.JLabel jLabel6;
+    private javax.swing.JLabel jLabel7;
+    private javax.swing.JLabel jLabel8;
+    private javax.swing.JLabel jLabel9;
+    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JLabel overLabel;
+    private javax.swing.JLabel preLabel;
+    private javax.swing.JLabel preLabel2;
+    private javax.swing.JLabel subLabel;
+    private javax.swing.JLabel timerLabel;
+    private javax.swing.JLabel titleLabel;
+    private javax.swing.JTextField txtResult;
+    private javax.swing.JTextField txtTimer;
+    private javax.swing.JTextField txtWord;
+    private javax.swing.JTextArea txtWordList;
+    // End of variables declaration                   
+}
